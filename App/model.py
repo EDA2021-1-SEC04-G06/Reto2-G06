@@ -30,10 +30,6 @@ from DISClib.ADT import list as lt
 from DISClib.ADT import map as mp
 from DISClib.DataStructures import mapentry as me
 from DISClib.Algorithms.Sorting import shellsort as sa
-from DISClib.Algorithms.Sorting import insertionsort as si
-from DISClib.Algorithms.Sorting import selectionsort as ss
-from DISClib.Algorithms.Sorting import mergesort as sm
-from DISClib.Algorithms.Sorting import quicksort as sq
 assert cf
 
 """
@@ -43,7 +39,7 @@ los mismos.
 
 # Construccion de modelos
 
-def newCatalog(tipo):
+def newCatalog():
     """
     Inicializa el catálogo de libros. Crea una lista vacia para guardar
     todos los libros, adicionalmente, crea una lista vacia para los autores,
@@ -51,18 +47,26 @@ def newCatalog(tipo):
     generos y libros. Retorna el catalogo inicializado.
     """
     catalog = {'videos': None,
-               'categorias': None
+                'categoriasid': None,
+                'categorias': None
                }
 
-    catalog['videos'] = lt.newList(tipo)
-    catalog['categorias'] = lt.newList(tipo)
+    catalog['videos'] = lt.newList('SINGLE_LINKED', compareVideosid)
+
+    catalog['categoriasid'] = mp.newMap(10000,
+                                   maptype = 'CHAINING',
+                                   loadfactor = 4.0,
+                                   comparefunction = compareMapVideocatid)
+
+    catalog['categorias'] = lt.newList('ARRAY_LIST')
 
     return catalog
 
 # Funciones para agregar informacion al catalogo
 def addVideo(catalog, video):
-    v = newVid(video['title'],video['channel_title'],video['trending_date'],video['publish_time'],video['views'],video['likes'],video['dislikes'],video['category_id'],video['country'],video['tags'])
+    v = newVid(video['title'], video['channel_title'], video['trending_date'],video['publish_time'],video['views'],video['likes'],video['dislikes'],video['category_id'],video['country'],video['tags'])
     lt.addLast(catalog['videos'], v)
+    mp.put(catalog['categoriasid'],v['category_id'], v)
 
 def addCategorias(catalog, categoria):
     c = newCat(categoria['name'], categoria['id'])
@@ -83,19 +87,47 @@ def newVid(title, channel_title,trending_date,publish_time,views,likes,dislikes,
     vid['country']=country
     vid['tags']=tags
     return vid
+
 def newCat(name, id):
-    """
-    Esta estructura almancena los tags utilizados para marcar libros.
-    """
+
 
     cat = {'name': '', 'id': ''}
     cat['name'] = name
     cat['id'] = id
     return cat
 
-# Funciones de consulta
 
 # Funciones utilizadas para comparar elementos dentro de una lista
+
+def videosSize(catalog):
+
+    return lt.size(catalog['videos'])
+
+def categoSize(catalog):
+
+    return lt.size(catalog['categorias'])
+
+def compareVideosid(ca1, ca2):
+    """
+    Compara dos ids de dos libros
+    """
+    if (ca1 == ca2):
+        return 0
+    elif ca1 > ca2:
+        return 1
+    else:
+        return -1
+
+def compareMapVideocatid(id, entry):
+    
+    identry = me.getKey(entry)
+    if (int(id) == int(identry)):
+        return 0
+    elif (int(id) > int(identry)):
+        return 1
+    else:
+        return -1
+
 def cmpVideosByViews(video1, video2): 
 
     return (float(video1['views']) > float(video2['views']))

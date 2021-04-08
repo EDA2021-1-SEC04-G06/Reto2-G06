@@ -36,11 +36,12 @@ operación solicitada
 
 def printMenu():
     print("Bienvenido")
-    print("1- Cargar información en el catálogo")
-    print("2- Requerimiento 1 : Consultar cuales son los n videos con mas views de determinado pais y categoria")
-    print("3- Requerimiento 2 : Consultar video que mas dias ha sio trending para determinado pais")
-    print("4- Requerimiento 3 : Consultar video que mas dias ha sio trending para determinada categoria")
-    print("5- Requerimiento 4 : Consultar cuales son los n videos con mas likes en un pais con tag especifico")
+    print("1- Inicializar Catálogo")
+    print("2- Cargar información en el catálogo")
+    print("3- Requerimiento 1 : Consultar cuales son los n videos con mas views de determinado pais y categoria")
+    print("4- Requerimiento 2 : Consultar video que mas dias ha sio trending para determinado pais")
+    print("5- Requerimiento 3 : Consultar video que mas dias ha sio trending para determinada categoria")
+    print("6- Requerimiento 4 : Consultar cuales son los n videos con mas likes en un pais con tag especifico")
     print("0- Salir")
 
 catalog = None
@@ -89,28 +90,22 @@ def buscarcateporname(categg):
 Menu principal
 """
 while True:
-    tipo = "ARRAY_LIST"
     printMenu()
-    
     inputs = input('Seleccione una opción para continuar\n')
     if int(inputs[0]) == 1:
-        tipo = input('Ingrese el tipo de representacion de las listas: ( ARRAY_LIST o LINKED_LIST ) \n')
-        catalog = initCatalog(tipo)
-        loadData(catalog)
-        print("Cargando información de los archivos ....")
-        print('Videos cargados: ' + str(lt.size(catalog['videos'])))
-        primero = lt.firstElement(catalog['videos'])
-        print("Info primer libro cargado: ")
-        print(" Titulo: "+ str(primero['title'])+"\n Nombre del canal: "+ str(primero['channel_title'])+"\n Fecha de popularidad: "+ str(primero['trending_date'])+"\n Pais: "+ str(primero['country'])+"\n Vistas: "+ str(primero['views']) + "\n Likes: "+ str(primero['likes'])+"\n Dislikes: "+ str(primero['dislikes'])+"\n Categoria: "+ str(primero['category_id'])+"\n")
-        print("Categorias :")
-        print("Nombre , id" )
-        for i in range(0,lt.size(catalog['categorias'])):
-            cate = lt.getElement(catalog['categorias'], i)
-            print(str(cate['name'])+" , "+str(cate['id']))
+        print("Inicializando Catálogo ....")
+        cont = controller.initCatalog()
 
-        
-            
     elif int(inputs[0]) == 2:
+        # TODO: modificaciones para observar el tiempo y memoria
+        print("Cargando información de los archivos ....")
+        answer = controller.loadData(cont)
+        print('Videos cargados: ' + str(controller.videosSize(cont)))
+        print('Categorias cargados: ' + str(controller.categoSize(cont)))
+        print("Tiempo [ms]: ", f"{answer[0]:.3f}", "  ||  ",
+              "Memoria [kB]: ", f"{answer[1]:.3f}")
+
+    elif int(inputs[0]) == 3:
         categg = input("Indique la categoria: ")
         categ = buscarcateporname(categg)
         pais = input("Indique el pais: ")
@@ -124,7 +119,7 @@ while True:
         print("Para la muestra de", size, " elementos, el tiempo (mseg) es: ",
                                           str(result[0]))
 
-    elif int(inputs[0]) == 3:
+    elif int(inputs[0]) == 4:
         
         pais = input("Indique el pais: ")
         tipodeorden = input("Indique el tipo de ordenamiento que quiere aplicar: ( selection, insertion, shell, quick o merge ) \n")
@@ -139,7 +134,7 @@ while True:
             print( " Pais: "+ str(primero['country']))
             print( " Dias: "+ str(primero['dias']))
 
-    elif int(inputs[0]) == 4 :
+    elif int(inputs[0]) == 5 :
 
         category_name= input("indique nombre de categoria: ")
         categor = buscarcateporname(category_name)
@@ -155,7 +150,7 @@ while True:
             print( " Categoria: "+ str(primero['category_id']))
             print( " Dias: "+ str(primero['dias']))
 
-    elif int(inputs[0]) == 5 :
+    elif int(inputs[0]) == 6 :
         tagg = input("Indique el tag: ")
         size = input("Indique tamaño de la muestra: ")
         tipodeorden = input("Indique el tipo de ordenamiento que quiere aplicar: ( selection, insertion, shell, quick o merge ) \n")
