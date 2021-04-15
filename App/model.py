@@ -238,34 +238,26 @@ def requerimiento2(catalog,pais):
         final = lt.subList(sorted_list, 1, 1)
     return final
 
-def requerimiento3(catalog,categor,tipodeorden,tipo):
-    nueva= lt.newList(tipo)
-    listae={}
-    for i in range(0, lt.size(catalog['videos'])):
-        ele=lt.getElement(catalog['videos'],i)
-        if ele['category_id'] == categor and not(ele['title'] in listae.keys()):
-            listae[ele['title']]=1
-            ele['dias'] = 1 
-            lt.addLast(nueva,ele)
-        elif ele['category_id'] == categor and (  ele['title'] in listae.keys()):
-            listae[ele['title']]=listae[ele['title']]+1
-            ele['dias'] = listae[ele['title']]
-            lt.addLast(nueva,ele)
-    sublista = nueva.copy() 
-    start_time = time.process_time()
-    if(tipodeorden=="shell"):
+def requerimiento3(catalog, categor):
+    final = None
+    nueva = lt.newList("ARRAY_LIST")
+    listaesta = {}
+    cates = mp.get(catalog['categoriasid'], categor)
+    if cates:
+        cavideos = me.getValue(cates)['videos']
+        for v in lt.iterator(cavideos):
+            if not(v['title'] in listaesta.keys()):
+                listaesta[v['title']] = 1
+                v['dias'] = 1
+                lt.addLast(nueva, v)
+            elif (v['title'] in listaesta.keys()):
+                listaesta[v['title']] = listaesta[v['title']]+1
+                v['dias'] = listaesta[v['title']]
+                lt.addLast(nueva, v)
+        sublista = nueva.copy()
         sorted_list = sa.sort(sublista, cmpVideosBytiempo)
-    elif (tipodeorden=="insertion"):
-        sorted_list = si.sort(sublista, cmpVideosBytiempo)
-    elif (tipodeorden=="selection"):
-        sorted_list = ss.sort(sublista, cmpVideosBytiempo)
-    elif (tipodeorden=="quick"):
-        sorted_list = sq.sort(sublista, cmpVideosBytiempo)
-    elif (tipodeorden=="merge"):
-        sorted_list = sm.sort(sublista, cmpVideosBytiempo)
-    stop_time = time.process_time() 
-    elapsed_time_mseg = (stop_time - start_time)*1000 
-    return sorted_list
+        final = lt.subList(sorted_list, 1, 1)
+    return final
 
 def requerimiento4(catalog, size, tipodeorden, tagg, tipo): 
     nueva = lt.newList(tipo)
