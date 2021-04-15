@@ -103,15 +103,13 @@ while True:
         
 
     elif int(inputs[0]) == 3:
-        categg = input("Indique la categoria: Music ")
+        categg = input("Indique la categoria: ")
         categ = controller.buscarcateporname(categg, catalog)
-        pais = input("Indique el pais: canada")
+        pais = input("Indique el pais: ")
         siz = input("Indique tamaño de la muestra: ")
         result = controller.requerimiento1(catalog, int(siz), categ, pais)
         print("Los  ", siz, " videos con mas likes son:")
         printvieostop(result)
-        
-            
 
     elif int(inputs[0]) == 4:
         
@@ -127,10 +125,10 @@ while True:
             print( " Pais: "+ str(primero['country']))
             print( " Dias: "+ str(primero['dias']))
 
-    elif int(inputs[0]) == 5 :
+    elif int(inputs[0]) == 5:
 
-        category_name= input("indique nombre de categoria: ")
-        categor = controller.buscarcateporname(category_name)
+        category_name= input("Indique nombre de categoria: ")
+        categor = controller.buscarcateporname(category_name, catalog)
         repuesta = controller.requerimiento3(catalog, categor)
         if lt.size(repuesta)<=0:
             print("No hay sufiecientes videos que cumplan las condiciones ")
@@ -143,15 +141,12 @@ while True:
             print( " Dias: "+ str(primero['dias']))
 
     elif int(inputs[0]) == 6 :
+        pais = input("Indique el pais: ")
         tagg = input("Indique el tag: ")
         size = input("Indique tamaño de la muestra: ")
-        result = controller.requerimiento4(catalog, int(size), tagg)
-        if lt.size(result[1])<=0:
-            print("No hay sufiecientes videos que cumplan las condiciones ")
-        else:
-            printResults4(result[1], size)
-        print("Para la muestra de", size, " elementos, el tiempo (mseg) es: ",
-                                          str(result[0]))
+        result = controller.requerimiento4(catalog, int(size), tagg, pais)
+        print("Los  ", size, " videos con mas likes son:")
+        printvieostop(result)
     else: 
         sys.exit(0)
 sys.exit(0)

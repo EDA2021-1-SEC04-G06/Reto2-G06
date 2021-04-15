@@ -259,34 +259,24 @@ def requerimiento3(catalog, categor):
         final = lt.subList(sorted_list, 1, 1)
     return final
 
-def requerimiento4(catalog, size, tipodeorden, tagg, tipo): 
-    nueva = lt.newList(tipo)
-    final = lt.newList(tipo)
-    listaee=[]
-    for i in range(0, lt.size(catalog['videos'])):
-        ele=lt.getElement(catalog['videos'],i)
-        
-        if tagg in ele['tags'] :
-            lt.addLast(nueva,ele)
-    sublista = nueva.copy() 
-    start_time = time.process_time() 
-    if(tipodeorden=="shell"):
+def requerimiento4(catalog, size, tagg, pais):
+    final = lt.newList("ARRAY_LIST")
+    final2 = None
+    nueva = lt.newList("ARRAY_LIST")
+    listaee = []
+    paisess = mp.get(catalog['pais'], pais.strip())
+    if paisess:
+        pavideos = me.getValue(paisess)['videos']
+        for v in lt.iterator(pavideos):
+            if tagg in v['tags']:
+                lt.addLast(nueva, v)
+        sublista = nueva.copy()
         sorted_list = sa.sort(sublista, cmpVideosByLikes)
-    elif (tipodeorden=="insertion"):
-        sorted_list = si.sort(sublista, cmpVideosByLikes)
-    elif (tipodeorden=="selection"):
-        sorted_list = ss.sort(sublista, cmpVideosByLikes)
-    elif (tipodeorden=="quick"):
-        sorted_list = sq.sort(sublista, cmpVideosByLikes)
-    elif (tipodeorden=="merge"):
-        sorted_list = sm.sort(sublista, cmpVideosByLikes)
-    stop_time = time.process_time() 
-    elapsed_time_mseg = (stop_time - start_time)*1000 
-
-    for i in range(0, lt.size(sorted_list)):
-        ete=lt.getElement(sorted_list,i)
-        if not(ete['title'] in listaee) :
-            listaee.append(ete['title'])
-            lt.addLast(final,ete)
-
-    return elapsed_time_mseg, final
+        for i in range(0, lt.size(sorted_list)):
+            u = lt.getElement(sorted_list, i)
+            if not(u['title'] in listaee):
+                listaee.append(u['title'])
+                lt.addLast(final, u)
+        final2 = lt.subList(final, 1, size)
+    return final2
+    

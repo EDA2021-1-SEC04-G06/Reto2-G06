@@ -109,9 +109,9 @@ def requerimiento3(catalog,categor):
     return model.requerimiento3(catalog,categor)
 
 
-def requerimiento4(catalog, size, tipodeorden, tagg, tipo ):
+def requerimiento4(catalog, size, tagg, pais):
 
-    return model.requerimiento4(catalog,size,tipodeorden, tagg, tipo)
+    return model.requerimiento4(catalog,size,tagg, pais)
 
 def getTime():
     """
