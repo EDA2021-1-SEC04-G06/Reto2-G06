@@ -100,13 +100,13 @@ def requerimiento1(catalog, siz, categ, pais):
 
     return model.requerimiento1(catalog, siz, categ, pais)
     
-def requerimiento2(catalog,pais,tipodeorden,tipo):
+def requerimiento2(catalog,pais):
 
-    return model.requerimiento2(catalog, pais, tipodeorden,tipo)
+    return model.requerimiento2(catalog, pais)
 
-def requerimiento3(catalog,categor,tipodeorden,tipo):
+def requerimiento3(catalog,categor):
 
-    return model.requerimiento3(catalog,categor,tipodeorden,tipo)
+    return model.requerimiento3(catalog,categor)
 
 
 def requerimiento4(catalog, size, tipodeorden, tagg, tipo ):

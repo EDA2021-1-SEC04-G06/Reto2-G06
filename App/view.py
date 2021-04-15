@@ -116,8 +116,7 @@ while True:
     elif int(inputs[0]) == 4:
         
         pais = input("Indique el pais: ")
-        tipodeorden = input("Indique el tipo de ordenamiento que quiere aplicar: ( selection, insertion, shell, quick o merge ) \n")
-        repuesta = controller.requerimiento2(catalog,pais,tipodeorden,tipo)
+        repuesta = controller.requerimiento2(catalog, pais)
         if lt.size(repuesta)<=0:
             print("No hay sufiecientes videos que cumplan las condiciones ")
         else:
@@ -131,9 +130,8 @@ while True:
     elif int(inputs[0]) == 5 :
 
         category_name= input("indique nombre de categoria: ")
-        categor = buscarcateporname(category_name)
-        tipodeorden = input("Indique el tipo de ordenamiento que quiere aplicar: ( selection, insertion, shell, quick o merge ) \n")
-        repuesta = controller.requerimiento3(catalog,categor,tipodeorden,tipo)
+        categor = controller.buscarcateporname(category_name)
+        repuesta = controller.requerimiento3(catalog, categor)
         if lt.size(repuesta)<=0:
             print("No hay sufiecientes videos que cumplan las condiciones ")
         else:
@@ -147,8 +145,7 @@ while True:
     elif int(inputs[0]) == 6 :
         tagg = input("Indique el tag: ")
         size = input("Indique tamaño de la muestra: ")
-        tipodeorden = input("Indique el tipo de ordenamiento que quiere aplicar: ( selection, insertion, shell, quick o merge ) \n")
-        result = controller.requerimiento4(catalog, int(size), tipodeorden, tagg, tipo)
+        result = controller.requerimiento4(catalog, int(size), tagg)
         if lt.size(result[1])<=0:
             print("No hay sufiecientes videos que cumplan las condiciones ")
         else:

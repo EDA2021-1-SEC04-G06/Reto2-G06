@@ -48,7 +48,8 @@ def newCatalog():
     """
     catalog = {'videos': None,
                'categoriasid': None,
-               'cate': None
+               'cate': None,
+               'pais': None
                }
 
     catalog['videos'] = lt.newList('SINGLE_LINKED', compareVideosid)
@@ -57,6 +58,11 @@ def newCatalog():
                                    maptype = 'CHAINING',
                                    loadfactor = 4.0,
                                    comparefunction = compareMapVideocatid)
+    
+    catalog['pais'] = mp.newMap(200,
+                                   maptype = 'CHAINING',
+                                   loadfactor = 4.0,
+                                   comparefunction = comparepais)
 
     catalog['cate'] = lt.newList('ARRAY_LIST')
 
@@ -67,7 +73,25 @@ def addVideo(catalog, video):
     v = newVid(video['title'], video['channel_title'], video['trending_date'],video['publish_time'],video['views'],video['likes'],video['dislikes'],video['category_id'],video['country'],video['tags'])
     lt.addLast(catalog['videos'], v)
     addVideoCate(catalog, v)
+    addpaais(catalog, v)
 
+
+def addpaais(catalog, v):
+
+    paises = catalog['pais']
+
+    paiss = v['country'].strip()
+    existp = mp.contains(paises, paiss)
+    if existp:
+        entry = mp.get(paises, paiss)
+        pa = me.getValue(entry)
+    else:
+        entry = {'country': "", 'videos': None}
+        entry['country'] = str(paiss)
+        entry['videos'] = lt.newList('ARRAY_LIST')
+        pa = entry
+        mp.put(paises, paiss, pa)
+    lt.addLast(pa['videos'], v)
 
 def addVideoCate(catalog, v):
 
@@ -147,6 +171,16 @@ def compareMapVideocatid(id, entry):
     else:
         return -1
 
+def comparepais(id, entry):
+    
+    identry = me.getKey(entry)
+    if (id == identry):
+        return 0
+    elif (id > identry):
+        return 1
+    else:
+        return -1
+
 def cmpVideosByViews(video1, video2): 
 
     return (float(video1['views']) > float(video2['views']))
@@ -168,7 +202,6 @@ def buscarcateporname(categg, catalog):
 
 def requerimiento1(catalog, siz, categ, pais): 
     final = None
-
     nueva = lt.newList("ARRAY_LIST")
     porcate = mp.get(catalog['categoriasid'], str(categ))
     if porcate:
@@ -183,34 +216,27 @@ def requerimiento1(catalog, siz, categ, pais):
         final = lt.subList(sorted_list, 1, siz)
     return final
 
-def requerimiento2(catalog,pais,tipodeorden,tipo):
-    nueva= lt.newList(tipo)
-    listaesta={}
-    for i in range(0, lt.size(catalog['videos'])):
-        ele=lt.getElement(catalog['videos'],i)
-        if ele['country'] == pais and not(ele['title'] in listaesta.keys()):
-            listaesta[ele['title']]=1
-            ele['dias'] = 1 
-            lt.addLast(nueva,ele)
-        elif ele['country'] == pais and (  ele['title'] in listaesta.keys()):
-            listaesta[ele['title']]=listaesta[ele['title']]+1
-            ele['dias'] = listaesta[ele['title']]
-            lt.addLast(nueva,ele)
-    sublista = nueva.copy() 
-    start_time = time.process_time()
-    if(tipodeorden=="shell"):
+
+def requerimiento2(catalog,pais):
+    final = None
+    nueva = lt.newList("ARRAY_LIST")
+    listaesta = {}
+    paisess = mp.get(catalog['pais'], pais.strip())
+    if paisess:
+        pavideos = me.getValue(paisess)['videos']
+        for v in lt.iterator(pavideos):
+            if not(v['title'] in listaesta.keys()):
+                listaesta[v['title']] = 1
+                v['dias'] = 1
+                lt.addLast(nueva, v)
+            elif (v['title'] in listaesta.keys()):
+                listaesta[v['title']] = listaesta[v['title']]+1
+                v['dias'] = listaesta[v['title']]
+                lt.addLast(nueva, v)
+        sublista = nueva.copy()
         sorted_list = sa.sort(sublista, cmpVideosBytiempo)
-    elif (tipodeorden=="insertion"):
-        sorted_list = si.sort(sublista, cmpVideosBytiempo)
-    elif (tipodeorden=="selection"):
-        sorted_list = ss.sort(sublista, cmpVideosBytiempo)
-    elif (tipodeorden=="quick"):
-        sorted_list = sq.sort(sublista, cmpVideosBytiempo)
-    elif (tipodeorden=="merge"):
-        sorted_list = sm.sort(sublista, cmpVideosBytiempo)
-    stop_time = time.process_time() 
-    elapsed_time_mseg = (stop_time - start_time)*1000 
-    return sorted_list 
+        final = lt.subList(sorted_list, 1, 1)
+    return final
 
 def requerimiento3(catalog,categor,tipodeorden,tipo):
     nueva= lt.newList(tipo)
