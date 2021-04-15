@@ -47,18 +47,18 @@ def newCatalog():
     generos y libros. Retorna el catalogo inicializado.
     """
     catalog = {'videos': None,
-                'categoriasid': None,
-                'categorias': None
+               'categoriasid': None,
+               'cate': None
                }
 
     catalog['videos'] = lt.newList('SINGLE_LINKED', compareVideosid)
 
-    catalog['categoriasid'] = mp.newMap(10000,
+    catalog['categoriasid'] = mp.newMap(200,
                                    maptype = 'CHAINING',
                                    loadfactor = 4.0,
                                    comparefunction = compareMapVideocatid)
 
-    catalog['categorias'] = lt.newList('ARRAY_LIST')
+    catalog['cate'] = lt.newList('ARRAY_LIST')
 
     return catalog
 
@@ -66,12 +66,31 @@ def newCatalog():
 def addVideo(catalog, video):
     v = newVid(video['title'], video['channel_title'], video['trending_date'],video['publish_time'],video['views'],video['likes'],video['dislikes'],video['category_id'],video['country'],video['tags'])
     lt.addLast(catalog['videos'], v)
-    mp.put(catalog['categoriasid'],v['category_id'], v)
+    addVideoCate(catalog, v)
+
+
+def addVideoCate(catalog, v):
+
+    cates = catalog['categoriasid']
+
+    cateid = v['category_id']
+    existid = mp.contains(cates, cateid)
+    if existid:
+        entry = mp.get(cates, cateid)
+        cat = me.getValue(entry)
+    else:
+        entry = {'category_id': "", 'videos': None}
+        entry['category_id'] = str(cateid)
+        entry['videos'] = lt.newList('ARRAY_LIST')
+        cat = entry
+        mp.put(cates, cateid, cat)
+    lt.addLast(cat['videos'], v)
+
 
 def addCategorias(catalog, categoria):
     c = newCat(categoria['name'], categoria['id'])
-    lt.addLast(catalog['categorias'], c)
-   
+    lt.addLast(catalog['cate'], c)
+    
 # Funciones para creacion de datos
 
 def newVid(title, channel_title,trending_date,publish_time,views,likes,dislikes,category_id,country,tags):
@@ -105,7 +124,7 @@ def videosSize(catalog):
 
 def categoSize(catalog):
 
-    return lt.size(catalog['categorias'])
+    return lt.size(catalog['cate'])
 
 def compareVideosid(ca1, ca2):
     """
@@ -138,29 +157,31 @@ def cmpVideosBytiempo(video1, video2):
 def cmpVideosByLikes(video1, video2):
    return (float(video1['likes']) > float(video2['likes']))
 
+def buscarcateporname(categg, catalog):
+    for i in range(0, lt.size(catalog['cate'])):
+            cate = lt.getElement(catalog['cate'], i)
+            if categg in str(cate['name']):
+                return cate['id']
+    return "ERROR"
+
 # Funciones de ordenamiento
 
-def requerimiento1(catalog, size, tipodeorden, categ, pais, tipo): 
-    nueva= lt.newList(tipo)
-    for i in range(0, lt.size(catalog['videos'])):
-        ele=lt.getElement(catalog['videos'],i)
-        if ele['category_id'] == categ and ele['country'] == pais:
-            lt.addLast(nueva,ele)
-    sublista = nueva.copy() 
-    start_time = time.process_time() 
-    if(tipodeorden=="shell"):
+def requerimiento1(catalog, siz, categ, pais): 
+    final = None
+
+    nueva = lt.newList("ARRAY_LIST")
+    porcate = mp.get(catalog['categoriasid'], str(categ))
+    if porcate:
+        catevideos = me.getValue(porcate)['videos']
+       
+        for v in lt.iterator(catevideos):
+            if v['country'] == pais:
+                lt.addLast(nueva, v)
+    
+        sublista = nueva.copy()
         sorted_list = sa.sort(sublista, cmpVideosByViews)
-    elif (tipodeorden=="insertion"):
-        sorted_list = si.sort(sublista, cmpVideosByViews)
-    elif (tipodeorden=="selection"):
-        sorted_list = ss.sort(sublista, cmpVideosByViews)
-    elif (tipodeorden=="quick"):
-        sorted_list = sq.sort(sublista, cmpVideosByViews)
-    elif (tipodeorden=="merge"):
-        sorted_list = sm.sort(sublista, cmpVideosByViews)
-    stop_time = time.process_time() 
-    elapsed_time_mseg = (stop_time - start_time)*1000 
-    return elapsed_time_mseg, sorted_list
+        final = lt.subList(sorted_list, 1, siz)
+    return final
 
 def requerimiento2(catalog,pais,tipodeorden,tipo):
     nueva= lt.newList(tipo)

@@ -23,6 +23,7 @@
 import config as cf
 import sys
 import controller
+from DISClib.ADT import map as mp
 from DISClib.ADT import list as lt
 assert cf
 
@@ -59,15 +60,15 @@ def loadData(catalog):
     """
     controller.loadData(catalog)
 
-def printResults1(ord_vid, sample): 
-    size = lt.size(ord_vid) 
-    if size >= float(sample): 
-        print("Los  ", sample, " videos con mas views son:") 
-        i=1 
-        while i <= float(sample): 
-            videoo = lt.getElement(ord_vid,i) 
-            print('Fecha de popularidad: '+videoo['trending_date'] +' Titulo: ' + videoo['title'] + ' Nombre del canal: '+videoo['channel_title']+' Fecha de publicacion: '+videoo['publish_time']+' Views: '+videoo['views']+' Likes: '+videoo['likes']+' Dislikes: '+videoo['dislikes']+"\n") 
-            i+=1
+def printvieostop(vide):
+
+    size = lt.size(vide)
+    if size:
+        for videoo in lt.iterator(vide):
+            print('Fecha de popularidad: '+videoo['trending_date'] +' Titulo: ' + videoo['title'] + ' Nombre del canal: '+videoo['channel_title']+' Fecha de publicacion: '+videoo['publish_time']+' Views: '+videoo['views']+' Likes: '+videoo['likes']+' Dislikes: '+videoo['dislikes']) 
+        print("\n")
+    else:
+        print('No se encontraron Videos.\n')
 
 def printResults4(ord_vid, sample): 
     size = lt.size(ord_vid) 
@@ -79,12 +80,7 @@ def printResults4(ord_vid, sample):
             print('Fecha de popularidad: '+videoo['trending_date'] +' Titulo: ' + videoo['title'] + ' Nombre del canal: '+videoo['channel_title']+' Fecha de publicacion: '+videoo['publish_time']+' Views: '+videoo['views']+' Likes: '+videoo['likes']+' Dislikes: '+videoo['dislikes']+  ' Tags: '+videoo['tags'] +"\n") 
             i+=1
 
-def buscarcateporname(categg):
-    for i in range(0,lt.size(catalog['categorias'])):
-            cate = lt.getElement(catalog['categorias'], i)
-            if categg in str(cate['name']):
-                return cate['id']
-    return "ERROR"
+
 
 """
 Menu principal
@@ -94,30 +90,28 @@ while True:
     inputs = input('Seleccione una opción para continuar\n')
     if int(inputs[0]) == 1:
         print("Inicializando Catálogo ....")
-        cont = controller.initCatalog()
+        catalog = controller.initCatalog()
 
     elif int(inputs[0]) == 2:
-        # TODO: modificaciones para observar el tiempo y memoria
         print("Cargando información de los archivos ....")
-        answer = controller.loadData(cont)
-        print('Videos cargados: ' + str(controller.videosSize(cont)))
-        print('Categorias cargados: ' + str(controller.categoSize(cont)))
+        answer = controller.loadData(catalog)
+        print('Videos cargados: ' + str(controller.videosSize(catalog)))
+        print('Categorias cargados: ' + str(controller.categoSize(catalog)))
         print("Tiempo [ms]: ", f"{answer[0]:.3f}", "  ||  ",
               "Memoria [kB]: ", f"{answer[1]:.3f}")
+        
+        
 
     elif int(inputs[0]) == 3:
-        categg = input("Indique la categoria: ")
-        categ = buscarcateporname(categg)
-        pais = input("Indique el pais: ")
-        size = input("Indique tamaño de la muestra: ")
-        tipodeorden = input("Indique el tipo de ordenamiento que quiere aplicar: ( selection, insertion, shell, quick o merge ) \n")
-        result = controller.requerimiento1(catalog, int(size), tipodeorden, categ, pais, tipo)
-        if lt.size(result[1])<=0:
-            print("No hay sufiecientes videos que cumplan las condiciones ")
-        else:
-            printResults1(result[1], size)
-        print("Para la muestra de", size, " elementos, el tiempo (mseg) es: ",
-                                          str(result[0]))
+        categg = input("Indique la categoria: Music ")
+        categ = controller.buscarcateporname(categg, catalog)
+        pais = input("Indique el pais: canada")
+        siz = input("Indique tamaño de la muestra: ")
+        result = controller.requerimiento1(catalog, int(siz), categ, pais)
+        print("Los  ", siz, " videos con mas likes son:")
+        printvieostop(result)
+        
+            
 
     elif int(inputs[0]) == 4:
         

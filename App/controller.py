@@ -92,10 +92,13 @@ def categoSize(catalog):
     return model.categoSize(catalog)
 
 
+def buscarcateporname(categg, catalog):
+    return model.buscarcateporname(categg, catalog)
 
-def requerimiento1(catalog, size, tipodeorden, categ, pais, tipo ):
 
-    return model.requerimiento1(catalog,size,tipodeorden, categ, pais, tipo)
+def requerimiento1(catalog, siz, categ, pais):
+
+    return model.requerimiento1(catalog, siz, categ, pais)
     
 def requerimiento2(catalog,pais,tipodeorden,tipo):
 
